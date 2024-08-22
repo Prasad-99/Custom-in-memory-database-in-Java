@@ -123,11 +123,26 @@ public class QueryExecutor {
             }
         }
 
-        for (Conditions condition : conditions){
-            if (condition.matches(user)){
-                return true;
+        List<Integer> flag = new ArrayList<>();
+
+        for (Conditions value : conditions) {
+            if (value.matches(user)) {
+                flag.add(1);
+            } else flag.add(0);
+        }
+
+        int result = flag.getFirst();
+        int i = 1;
+        for (Conditions value : conditions){
+            if (Objects.equals(value.getLogicalOperator(), "AND")){
+                result = result & flag.get(i);
+                i++;
+            }
+            if (Objects.equals(value.getLogicalOperator(), "OR")){
+                result = result | flag.get(i);
+                i++;
             }
         }
-        return false;
+        return result == 1;
     }
 }
