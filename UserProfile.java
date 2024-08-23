@@ -1,4 +1,6 @@
-public class UserProfile {
+import java.io.Serializable;
+
+public class UserProfile implements Serializable {
     private String userId;
     private String name;
     private String email;

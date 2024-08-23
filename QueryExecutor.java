@@ -24,6 +24,7 @@ public class QueryExecutor {
         for (UserProfile user : database.getAllUserProfiles()){
             if (matchesConditions(user, query.getWhereConditions(), query)){
                 database.deleteUserProfile(user.getUserId());
+                database.saveToFile();
             }
         }
         return "User Profile Deleted";
@@ -35,6 +36,7 @@ public class QueryExecutor {
             if (matchesConditions(user, query.getWhereConditions(), query)){
                 query.getUpdateValues().forEach((field, value) -> setFieldValue(user, field, value));
                 database.updateUserProfile(user.getUserId(), user);
+                database.saveToFile();
             }
         }
         return "User Profile Updated";
@@ -49,7 +51,12 @@ public class QueryExecutor {
                 (String) query.getInsertValues().get("name"),
                 UUID.randomUUID().toString()
         );
-        database.createUserProfile(newUser);
+        try{
+            database.createUserProfile(newUser);
+            database.saveToFile();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         return "User Profile inserted successfully";
     }
 

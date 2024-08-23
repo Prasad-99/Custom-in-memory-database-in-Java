@@ -1,22 +1,19 @@
+import java.io.*;
 import java.util.*;
 
 public class InMemoryDatabase {
-    private final Map<String, UserProfile> userProfiles;
-    private final Map<String, String> emailIndex;
-    private final TreeMap<Integer, String> ageIndex;
+    private Map<String, UserProfile> userProfiles;
+    private static final String DATA_FILE = "data.ser";
 
     public InMemoryDatabase() {
         this.userProfiles = new HashMap<>();
-        this.emailIndex = new HashMap<>();
-        this.ageIndex = new TreeMap<>();
+        loadFromFile();
     }
 
     //Create new user profiles
     public void createUserProfile(UserProfile userProfile) {
         if (!userProfiles.containsKey(userProfile.getUserId())){
             userProfiles.put(userProfile.getUserId(), userProfile);
-            emailIndex.put(userProfile.getEmail(), userProfile.getUserId());
-            ageIndex.put(userProfile.getAge(), userProfile.getUserId());
         } else {
             throw new IllegalArgumentException("User ID already exists");
         }
@@ -25,12 +22,7 @@ public class InMemoryDatabase {
     //Update an existing user profile
     public void updateUserProfile(String userId, UserProfile updatedProfile) {
         if (userProfiles.containsKey(userId)){
-            String oldEmail = userProfiles.get(userId).getEmail();
-            if (!oldEmail.equals(updatedProfile.getEmail())){
-                emailIndex.remove(oldEmail);
-            }
             userProfiles.put(userId, updatedProfile);
-            emailIndex.put(updatedProfile.getEmail(), userId);
         } else {
             throw new IllegalArgumentException("User ID does not exist");
         }
@@ -39,9 +31,7 @@ public class InMemoryDatabase {
     //Delete a user profile by user
     public void deleteUserProfile(String userId) {
         if (userProfiles.containsKey(userId)){
-            String email = userProfiles.get(userId).getEmail();
             userProfiles.remove(userId);
-            emailIndex.remove(email);
         } else {
             throw new IllegalArgumentException("User ID does not exist");
         }
@@ -52,4 +42,24 @@ public class InMemoryDatabase {
         return new ArrayList<>(userProfiles.values());
     }
 
+    public void saveToFile(){
+        try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
+            oos.writeObject(userProfiles);
+            System.out.println("Data saved to " + DATA_FILE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void loadFromFile(){
+        try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(DATA_FILE))){
+            userProfiles = (Map<String, UserProfile>) ois.readObject();
+            System.out.println("Data file loaded from " + DATA_FILE);
+        } catch (FileNotFoundException e){
+            System.out.println("No data file found");
+        } catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
+    }
 }

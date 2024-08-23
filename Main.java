@@ -14,7 +14,7 @@ public class Main {
         System.out.println(executor.executeQuery(parser.parse("INSERT INTO users (name, email, age) VALUES (Goldy, goldy@example.com, 36)")));
 
         //Test Select
-        System.out.println(executor.executeQuery(parser.parse("SELECT * FROM users where name = Alice OR age > 50")));
+        System.out.println(executor.executeQuery(parser.parse("SELECT * FROM users")));
 
 
         //Test Update
@@ -22,7 +22,7 @@ public class Main {
         System.out.println(executor.executeQuery(parser.parse("SELECT * FROM users")));
 
         //Test Delete
-        System.out.println(executor.executeQuery(parser.parse("DELETE FROM users WHERE name = Alice OR age > 30")));
+        System.out.println(executor.executeQuery(parser.parse("DELETE FROM users WHERE name = Alice")));
         System.out.println(executor.executeQuery(parser.parse("SELECT * FROM users")));
     }
 }
